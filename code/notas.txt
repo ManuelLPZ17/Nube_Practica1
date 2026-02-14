@@ -1,0 +1,84 @@
+chmod 400  // esto es para poder cambiar los permisos
+
+
+s3
+aws s3 mb s3://datosUsuario --region us-east-1
+---------------------------------
+ec2
+
+export AWS_PAGER=cat
+
+# Crear key pair
+aws ec2 create-key-pair --key-name practica1-key --query 'KeyMaterial' --output text --region us-east-1 > practica1-key.pem
+chmod 400 practica1-key.pem
+
+# Crear grupos de seguridad
+aws ec2 create-security-group --group-name practica1-sg --description "security para la practica1" --region us-east-1
+aws ec2 authorize-security-group-ingress --group-id sg-0ea91364f61906be2 --protocol tcp --port 22 --cidr 0.0.0.0/0 --region us-east-1
+aws ec2 authorize-security-group-ingress --group-id sg-0ea91364f61906be2 --protocol tcp --port 8080 --cidr 0.0.0.0/0 --region us-east-1
+
+# la siguiente linea es para ver que se haya creado el sg
+# aws ec2 describe-security-groups --group-ids <sg-id> --query 'SecurityGroups[].IpPermissions'
+
+
+# Crear una instancia EC2
+# El ID del AMI lo puedes obtener en la consola de AWS.
+aws ec2 run-instances \
+    --image-id ami-0532be01f26a3de55 \
+    --count 1 \
+    --instance-type t3.micro \
+    --key-name practica1-key \
+    --security-groups practica1-sg \
+    --region us-east-1 \
+    --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=practica1-ec2}]'
+
+# Ver IP pública de la instancia EC2  PARA PODER CONECTARNOS
+aws ec2 describe-instances \
+  --filters "Name=tag:Name,Values=practica1-ec2" \
+  --query 'Reservations[].Instances[].PublicIpAddress' \
+  --output text \
+  --region us-east-1
+
+54.198.175.83
+
+en el navegador
+# Terminal 1 - Conexión SSH a la instancia EC2
+ssh -i practica1-key.pem ec2-user@54.198.175.83
+
+# Dentro de la instancia EC2
+export TERM=xterm-256color
+
+--------------------
+# una vez hecho esto abrimos ubuntu nuevamente
+
+# Terminal 2 (ubuntu de mi compu)- Copiar código utilizando SCP
+scp -i practica1-key.pem -r code ec2-user@54.198.175.83:/home/ec2-user
+
+
+---------------- para instalar py
+
+
+cd src
+sudo yum update -y
+sudo yum install -y python3.13
+sudo yum install -y ca-certificates
+sudo update-ca-trust
+
+# copy aws credentials for the sandbox
+mkdir -p ~/.aws
+vi ~/.aws/credentials # copy paste here
+
+# run the server
+python3.13 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python main.py
+
+# es importante crear un entorno virtual nuevo para poder correr
+python3 -m venv venv
+
+#activandolo
+source venv/bin/activate
+
+
+

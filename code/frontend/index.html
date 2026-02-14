@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini E-Commerce</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Agregar producto</h1>
+
+<form id="productForm" enctype="multipart/form-data">
+    <label>Nombre del producto</label>
+    <input type="text" name="name" required>
+
+    <label>Precio</label>
+    <input type="number" name="price" step="0.01" required>
+
+    <label>Cantidad en inventario</label>
+    <input type="number" name="stock" required>
+
+    <label>Descripción</label>
+    <textarea name="description"></textarea>
+
+    <label>Imagen del producto</label>
+    <input type="file" name="image" accept="image/*" required>
+
+    <button type="submit">Guardar producto</button>
+</form>
+
+<p id="response"></p>
+
+<script src="script.js"></script>
+</body>
+</html>
