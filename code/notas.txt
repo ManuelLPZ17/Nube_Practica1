@@ -2,20 +2,20 @@ chmod 400  // esto es para poder cambiar los permisos
 
 
 s3
-aws s3 mb s3://datosUsuario --region us-east-1
+aws s3 mb s3://datos7533532 --region us-east-1
 ---------------------------------
 ec2
 
 export AWS_PAGER=cat
 
 # Crear key pair
-aws ec2 create-key-pair --key-name practica1-key --query 'KeyMaterial' --output text --region us-east-1 > practica1-key.pem
-chmod 400 practica1-key.pem
+aws ec2 create-key-pair --key-name practica001-key --query 'KeyMaterial' --output text --region us-east-1 > practica001-key.pem
+chmod 400 practica001-key.pem
 
 # Crear grupos de seguridad
-aws ec2 create-security-group --group-name practica1-sg --description "security para la practica1" --region us-east-1
-aws ec2 authorize-security-group-ingress --group-id sg-0ea91364f61906be2 --protocol tcp --port 22 --cidr 0.0.0.0/0 --region us-east-1
-aws ec2 authorize-security-group-ingress --group-id sg-0ea91364f61906be2 --protocol tcp --port 8080 --cidr 0.0.0.0/0 --region us-east-1
+aws ec2 create-security-group --group-name practica001-sg --description "security para la practica001" --region us-east-1
+aws ec2 authorize-security-group-ingress --group-id sg-0ecd2204d90c207a2 --protocol tcp --port 22 --cidr 0.0.0.0/0 --region us-east-1
+aws ec2 authorize-security-group-ingress --group-id sg-0ecd2204d90c207a2 --protocol tcp --port 8080 --cidr 0.0.0.0/0 --region us-east-1
 
 # la siguiente linea es para ver que se haya creado el sg
 # aws ec2 describe-security-groups --group-ids <sg-id> --query 'SecurityGroups[].IpPermissions'
@@ -27,23 +27,23 @@ aws ec2 run-instances \
     --image-id ami-0532be01f26a3de55 \
     --count 1 \
     --instance-type t3.micro \
-    --key-name practica1-key \
-    --security-groups practica1-sg \
+    --key-name practica001-key \
+    --security-groups practica001-sg \
     --region us-east-1 \
     --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=practica1-ec2}]'
 
 # Ver IP pública de la instancia EC2  PARA PODER CONECTARNOS
 aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=practica1-ec2" \
+  --filters "Name=tag:Name,Values=practica001-ec2" \
   --query 'Reservations[].Instances[].PublicIpAddress' \
   --output text \
   --region us-east-1
 
-54.198.175.83
+54.91.37.154
 
 en el navegador
 # Terminal 1 - Conexión SSH a la instancia EC2
-ssh -i practica1-key.pem ec2-user@54.198.175.83
+ssh -i practica001-key.pem ec2-user@54.91.37.154
 
 # Dentro de la instancia EC2
 export TERM=xterm-256color
@@ -52,7 +52,7 @@ export TERM=xterm-256color
 # una vez hecho esto abrimos ubuntu nuevamente
 
 # Terminal 2 (ubuntu de mi compu)- Copiar código utilizando SCP
-scp -i practica1-key.pem -r code ec2-user@54.198.175.83:/home/ec2-user
+scp -i practica001-key.pem -r code ec2-user@54.91.37.154:/home/ec2-user
 
 
 ---------------- para instalar py

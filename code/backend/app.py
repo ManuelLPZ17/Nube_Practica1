@@ -30,15 +30,21 @@ def upload_product():
     if not image:
         return jsonify({"message": "No se recibió imagen"}), 400
 
+    
+
     # Guardado local temporal
     image_path = os.path.join(UPLOAD_FOLDER, image.filename)
+
+
+
+
     image.save(image_path)
 
     # -------------------------
     # Subir imagen a S3
     # -------------------------
     s3 = boto3.client('s3', region_name='us-east-1')
-    bucket_name = "datos753353"
+    bucket_name = "datos7533532"
 
     try:
         s3.upload_file(
@@ -50,6 +56,9 @@ def upload_product():
 
     except Exception as e:
         print("Error al subir a S3:", e)
+        import traceback
+        print("ERROR S3:")
+        traceback.print_exc()
         return jsonify({"message": "Error al subir imagen a S3"}), 500
 
     print("Producto recibido:")
